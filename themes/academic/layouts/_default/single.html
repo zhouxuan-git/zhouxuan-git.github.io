@@ -1,0 +1,22 @@
+﻿{{ define "main" }}
+<article class="single-post">
+    <h1>{{ .Title }}</h1>
+    <div class="meta">
+        <time>{{ .Date.Format "2006-01-02" }}</time>
+        {{ range .Params.tags }}
+        <a href="/tags/{{ . }}/" class="tag">#{{ . }}</a>
+        {{ end }}
+    </div>
+    <div class="content">
+        {{ .Content }}
+    </div>
+</article>
+<div class="post-nav">
+    {{ with .PrevInSection }}
+    <a href="{{ .RelPermalink }}" class="prev">← {{ .Title }}</a>
+    {{ end }}
+    {{ with .NextInSection }}
+    <a href="{{ .RelPermalink }}" class="next">{{ .Title }} →</a>
+    {{ end }}
+</div>
+{{ end }}

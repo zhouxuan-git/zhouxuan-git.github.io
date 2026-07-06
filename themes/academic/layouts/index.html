@@ -1,0 +1,26 @@
+﻿{{ define "main" }}
+<div class="home-intro">
+    <h1>👋 你好，我是{{ .Site.Params.author }}</h1>
+    <p class="lead">{{ .Site.Params.bio }}</p>
+</div>
+
+<section class="post-list">
+    <h2>📝 最新文章</h2>
+    {{ range first 5 .Site.RegularPages }}
+    <article class="post-card">
+        <h3><a href="{{ .RelPermalink }}">{{ .Title }}</a></h3>
+        <div class="meta">
+            <time>{{ .Date.Format "2006-01-02" }}</time>
+            {{ range .Params.tags }}
+            <a href="/tags/{{ . }}/" class="tag">#{{ . }}</a>
+            {{ end }}
+        </div>
+        <p>{{ .Summary | truncate 150 }}</p>
+    </article>
+    {{ end }}
+    
+    {{ if gt (len .Site.RegularPages) 5 }}
+    <a href="/post/" class="btn">查看全部 →</a>
+    {{ end }}
+</section>
+{{ end }}

@@ -1,0 +1,26 @@
+baseURL = "https://zhouxuan-git.github.io/"
+locale = "zh-CN"
+title = "周炫的个人博客"
+theme = "academic"
+
+[params]
+  author = "周炫"
+  email = "15261942571@163.com"
+  location = "上海 · 华东师范大学"
+  description = "华东师范大学 · 空间人工智能学院 · 测绘工程"
+  bio = "测绘工程硕士生，研究方向为遥感图像处理与空间大数据分析。热爱用代码解决地理问题，目前专注于GEE遥感云计算与深度学习在遥感中的应用。"
+
+[menu]
+  [[menu.main]]
+    identifier = "posts"
+    name = "📝 学习笔记"
+    url = "/post/"
+    weight = 10
+  [[menu.main]]
+    identifier = "about"
+    name = "👤 关于我"
+    url = "/about/"
+    weight = 20
+
+[taxonomies]
+  tag = "tags"

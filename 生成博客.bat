@@ -1,0 +1,7 @@
+@echo off
+echo ??????...
+C:\Users\Administrator\AppData\Local\Microsoft\WinGet\Links\hugo.exe --source D:\myblog --destination D:\myblog\public
+echo.
+echo ? ???????????????
+start D:\myblog\public\index.html
+pause

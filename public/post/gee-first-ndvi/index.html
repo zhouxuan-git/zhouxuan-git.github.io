@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GEE初体验：我的第一张NDVI图 | 周炫的个人博客</title>
+    <link rel="stylesheet" href="/css/style.css">
+    
+</head>
+<body>
+    <nav class="topnav">
+        <div class="nav-inner">
+            <a href="/" class="brand">🏠 周炫的个人博客</a>
+            <div class="nav-links">
+                
+                <a href="/post/">📝 学习笔记</a>
+                
+                <a href="/about/">👤 关于我</a>
+                
+            </div>
+        </div>
+    </nav>
+    <div class="layout">
+        <aside class="sidebar">
+            <div class="profile">
+                <div class="avatar">🎓</div>
+                <h2>周炫</h2>
+                <p class="affil">华东师范大学 · 空间人工智能学院 · 测绘工程</p>
+                <div class="contact">
+                    <p>📧 15261942571@163.com</p>
+                    <p>📍 上海 · 华东师范大学</p>
+                </div>
+                <div class="tags-cloud">
+                    <h3>标签</h3>
+                    
+                    <a href="/tags/gee/" class="tag">#gee</a>
+                    
+                    <a href="/tags/ndvi/" class="tag">#ndvi</a>
+                    
+                    <a href="/tags/sentinel-2/" class="tag">#sentinel-2</a>
+                    
+                    <a href="/tags/%e9%81%a5%e6%84%9f%e5%85%a5%e9%97%a8/" class="tag">#遥感入门</a>
+                    
+                </div>
+            </div>
+        </aside>
+        <main>
+            
+<article class="single-post">
+    <h1>GEE初体验：我的第一张NDVI图</h1>
+    <div class="meta">
+        <time>2026-07-06</time>
+        
+        <a href="/tags/GEE/" class="tag">#GEE</a>
+        
+        <a href="/tags/NDVI/" class="tag">#NDVI</a>
+        
+        <a href="/tags/Sentinel-2/" class="tag">#Sentinel-2</a>
+        
+        <a href="/tags/%e9%81%a5%e6%84%9f%e5%85%a5%e9%97%a8/" class="tag">#遥感入门</a>
+        
+    </div>
+    <div class="content">
+        <h2 id="背景">背景</h2>
+<p>NDVI（归一化植被指数）是遥感中最基础也最重要的指标之一，可以衡量地表植被健康程度。公式很简单：</p>
+<p>NDVI = (NIR - Red) / (NIR + Red)</p>
+<p>Sentinel-2卫星每5天重访一次，分辨率10米，免费开放——是做植被分析的理想数据源。</p>
+<h2 id="代码">代码</h2>
+<p>在GEE Code Editor中运行以下JavaScript代码：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">image</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">ee</span>.<span style="color:#a6e22e">ImageCollection</span>(<span style="color:#e6db74">&#34;COPERNICUS/S2_SR_HARMONIZED&#34;</span>)
+</span></span><span style="display:flex;"><span>  .<span style="color:#a6e22e">filterDate</span>(<span style="color:#e6db74">&#34;2024-07-01&#34;</span>, <span style="color:#e6db74">&#34;2024-07-31&#34;</span>)
+</span></span><span style="display:flex;"><span>  .<span style="color:#a6e22e">filterBounds</span>(<span style="color:#a6e22e">ee</span>.<span style="color:#a6e22e">Geometry</span>.<span style="color:#a6e22e">Point</span>(<span style="color:#ae81ff">120.16</span>, <span style="color:#ae81ff">33.35</span>))
+</span></span><span style="display:flex;"><span>  .<span style="color:#a6e22e">median</span>();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">ndvi</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">image</span>.<span style="color:#a6e22e">normalizedDifference</span>([<span style="color:#e6db74">&#34;B8&#34;</span>, <span style="color:#e6db74">&#34;B4&#34;</span>]).<span style="color:#a6e22e">rename</span>(<span style="color:#e6db74">&#34;NDVI&#34;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">Map</span>.<span style="color:#a6e22e">centerObject</span>(<span style="color:#a6e22e">image</span>, <span style="color:#ae81ff">10</span>);
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">Map</span>.<span style="color:#a6e22e">addLayer</span>(<span style="color:#a6e22e">ndvi</span>, {
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">min</span><span style="color:#f92672">:</span> <span style="color:#ae81ff">0</span>, <span style="color:#a6e22e">max</span><span style="color:#f92672">:</span> <span style="color:#ae81ff">1</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">palette</span><span style="color:#f92672">:</span> [<span style="color:#e6db74">&#34;red&#34;</span>, <span style="color:#e6db74">&#34;yellow&#34;</span>, <span style="color:#e6db74">&#34;green&#34;</span>]
+</span></span><span style="display:flex;"><span>}, <span style="color:#e6db74">&#34;NDVI&#34;</span>);
+</span></span></code></pre></div><h2 id="结果">结果</h2>
+<p>运行后可以看到盐城地区的NDVI分布图——绿色区域代表植被茂密（沿海滩涂湿地），红色区域代表裸地或建筑区。</p>
+<h2 id="下一步">下一步</h2>
+<ul>
+<li>计算NDVI时间序列，观察植被季节变化</li>
+<li>对比不同年份NDVI，分析变化趋势</li>
+<li>将NDVI与GPP（总初级生产力）关联</li>
+</ul>
+
+    </div>
+</article>
+<div class="post-nav">
+    
+    
+</div>
+
+        </main>
+    </div>
+    <footer>
+        <p>© 2026 周炫 | Powered by Hugo</p>
+    </footer>
+</body>
+</html>

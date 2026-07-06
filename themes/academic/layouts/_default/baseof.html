@@ -1,0 +1,47 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ if .IsHome }}{{ .Site.Title }}{{ else }}{{ .Title }} | {{ .Site.Title }}{{ end }}</title>
+    <link rel="stylesheet" href="/css/style.css">
+    {{ if .Params.math }}<script src="/js/math.js" defer></script>{{ end }}
+</head>
+<body>
+    <nav class="topnav">
+        <div class="nav-inner">
+            <a href="/" class="brand">🏠 {{ .Site.Title }}</a>
+            <div class="nav-links">
+                {{ range .Site.Menus.main }}
+                <a href="{{ .URL }}">{{ .Name }}</a>
+                {{ end }}
+            </div>
+        </div>
+    </nav>
+    <div class="layout">
+        <aside class="sidebar">
+            <div class="profile">
+                <div class="avatar">🎓</div>
+                <h2>{{ .Site.Params.author }}</h2>
+                <p class="affil">{{ .Site.Params.description }}</p>
+                <div class="contact">
+                    <p>📧 {{ .Site.Params.email }}</p>
+                    <p>📍 {{ .Site.Params.location }}</p>
+                </div>
+                <div class="tags-cloud">
+                    <h3>标签</h3>
+                    {{ range $name, $taxonomy := .Site.Taxonomies.tags }}
+                    <a href="/tags/{{ $name }}/" class="tag">#{{ $name }}</a>
+                    {{ end }}
+                </div>
+            </div>
+        </aside>
+        <main>
+            {{ block "main" . }}{{ end }}
+        </main>
+    </div>
+    <footer>
+        <p>© {{ now.Format "2006" }} {{ .Site.Params.author }} | Powered by Hugo</p>
+    </footer>
+</body>
+</html>
