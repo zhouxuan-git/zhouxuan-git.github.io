@@ -1,0 +1,62 @@
+/* 全局 */
+:root { --primary: #1a5276; --bg: #f8f9fa; --card: #ffffff; --text: #2c3e50; --text-light: #7f8c8d; --border: #e9ecef; --accent: #2980b9; --tag-bg: #eaf2f8; }
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans SC",sans-serif; line-height:1.8; color:var(--text); background:var(--bg); }
+
+.topnav { background:var(--primary); color:white; padding:0; position:sticky; top:0; z-index:100; box-shadow:0 2px 8px rgba(0,0,0,.1); }
+.nav-inner { max-width:1100px; margin:0 auto; padding:12px 24px; display:flex; justify-content:space-between; align-items:center; }
+.brand { color:white; text-decoration:none; font-size:1.2em; font-weight:600; }
+.nav-links a { color:rgba(255,255,255,.9); text-decoration:none; margin-left:24px; font-size:.95em; }
+.nav-links a:hover { color:white; }
+
+.layout { max-width:1100px; margin:0 auto; padding:30px 24px; display:grid; grid-template-columns:260px 1fr; gap:30px; }
+.sidebar { position:sticky; top:70px; align-self:start; }
+.profile { background:var(--card); border-radius:12px; padding:28px 20px; text-align:center; box-shadow:0 1px 4px rgba(0,0,0,.06); }
+.avatar { font-size:3em; margin-bottom:12px; }
+.profile h2 { font-size:1.3em; color:var(--primary); margin-bottom:6px; }
+.affil { font-size:.85em; color:var(--text-light); line-height:1.5; margin-bottom:15px; }
+.contact { text-align:left; font-size:.85em; color:var(--text-light); border-top:1px solid var(--border); padding-top:15px; }
+.contact p { margin-bottom:4px; }
+.tags-cloud { margin-top:20px; text-align:left; border-top:1px solid var(--border); padding-top:15px; }
+.tags-cloud h3 { font-size:.9em; margin-bottom:10px; }
+.tag { display:inline-block; background:var(--tag-bg); color:var(--accent); padding:2px 10px; border-radius:12px; font-size:.8em; margin:2px 3px; text-decoration:none; }
+.tag:hover { background:#d4e6f1; }
+
+main { min-width:0; }
+.home-intro { background:linear-gradient(135deg,var(--primary),var(--accent)); color:white; padding:40px 30px; border-radius:12px; margin-bottom:30px; }
+.home-intro h1 { font-size:1.8em; margin-bottom:10px; }
+.home-intro .lead { font-size:1.05em; opacity:.9; line-height:1.6; }
+.post-list h2 { font-size:1.2em; margin-bottom:18px; color:var(--primary); padding-bottom:8px; border-bottom:2px solid var(--border); }
+
+.post-card, .single-post { background:var(--card); border-radius:10px; padding:24px; margin-bottom:16px; box-shadow:0 1px 4px rgba(0,0,0,.06); }
+.post-card:hover { box-shadow:0 3px 12px rgba(0,0,0,.08); }
+.post-card h3, .single-post h1 { font-size:1.2em; margin-bottom:8px; color:var(--primary); }
+.post-card h3 a { color:var(--primary); text-decoration:none; }
+.post-card h3 a:hover { color:var(--accent); }
+.meta { font-size:.85em; color:var(--text-light); margin-bottom:12px; }
+.meta time { margin-right:12px; }
+.post-card p { color:#555; font-size:.95em; line-height:1.7; }
+
+.single-post { padding:30px; }
+.single-post h1 { font-size:1.6em; }
+.content { line-height:1.9; font-size:1.02em; }
+.content h2 { font-size:1.2em; margin:28px 0 12px; color:var(--primary); padding-bottom:6px; border-bottom:1px solid var(--border); }
+.content h3 { font-size:1.1em; margin:20px 0 8px; }
+.content p { margin-bottom:16px; }
+.content ul, .content ol { margin:0 0 16px 24px; }
+.content li { margin-bottom:6px; }
+.content pre { background:#2c3e50; color:#ecf0f1; padding:18px; border-radius:8px; overflow-x:auto; margin:16px 0; font-size:.9em; line-height:1.5; }
+.content code { font-family:"Fira Code","Cascadia Code",Consolas,monospace; background:#f0f0f0; padding:2px 6px; border-radius:4px; font-size:.9em; }
+.content pre code { background:none; padding:0; border-radius:0; }
+.content blockquote { border-left:4px solid var(--accent); padding:10px 20px; margin:16px 0; background:#f0f5fa; border-radius:0 8px 8px 0; }
+.content table { width:100%; border-collapse:collapse; margin:16px 0; }
+.content th, .content td { border:1px solid var(--border); padding:10px 14px; text-align:left; }
+.content th { background:var(--primary); color:white; font-weight:500; }
+
+.btn { display:inline-block; background:var(--accent); color:white; padding:10px 24px; border-radius:6px; text-decoration:none; font-weight:500; }
+.btn:hover { background:var(--primary); }
+.post-nav { display:flex; justify-content:space-between; margin-top:24px; }
+.post-nav a { color:var(--accent); text-decoration:none; }
+footer { text-align:center; padding:24px; color:var(--text-light); font-size:.85em; border-top:1px solid var(--border); margin-top:40px; }
+
+@media (max-width:768px) { .layout { grid-template-columns:1fr; } .sidebar { position:static; } .nav-links a { margin-left:12px; font-size:.85em; } }
