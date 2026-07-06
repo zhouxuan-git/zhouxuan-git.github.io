@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+	<channel>
+		<title>Sentinel-2 on 周炫的个人博客</title>
+		<link>https://evanzhou.gitee.io/tags/sentinel-2/</link>
+		<description>Recent content in Sentinel-2 on 周炫的个人博客</description>
+		<generator>Hugo</generator>
+		<language>zh-CN</language>
+		
+		
+		
+		
+			<lastBuildDate>Mon, 06 Jul 2026 00:00:00 +0000</lastBuildDate>
+		
+			<atom:link href="https://evanzhou.gitee.io/tags/sentinel-2/index.xml" rel="self" type="application/rss+xml" />
+			<item>
+				<title>GEE初体验：我的第一张NDVI图</title>
+				<link>https://evanzhou.gitee.io/post/gee-first-ndvi/</link>
+				<pubDate>Mon, 06 Jul 2026 00:00:00 +0000</pubDate>
+				<guid>https://evanzhou.gitee.io/post/gee-first-ndvi/</guid>
+				<description>在Google Earth Engine上跑通第一段代码，计算并可视化NDVI</description>
+			</item>
+	</channel>
+</rss>
