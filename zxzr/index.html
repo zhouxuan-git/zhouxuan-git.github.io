@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#32251f">
+    <meta name="description" content="ZXZR 时光相簿：翻开相簿，收藏每一个值得记住的瞬间。">
+    <title>ZXZR · 时光相簿</title>
+    <link rel="stylesheet" href="./style.css">
+    <script defer src="./config.js"></script>
+    <script defer src="./app.js"></script>
+  </head>
+  <body>
+    <main class="site-shell">
+      <header class="site-header">
+        <a class="home-link" href="../" aria-label="返回网站主页">← 返回主页</a>
+        <p class="eyebrow">ZXZR <span aria-hidden="true">✦</span> THE MEMORY ALBUM</p>
+        <h1>时光相簿</h1>
+        <p class="intro">把值得记住的瞬间，一页一页珍藏。</p>
+      </header>
+
+      <section class="album-area" aria-label="照片相簿">
+        <div class="album-stage" id="albumStage">
+          <article class="album-sheet" id="albumSheet" aria-label="相簿内页" aria-hidden="true" inert>
+            <div class="sheet-content">
+              <div class="sheet-heading">
+                <div>
+                  <p class="sheet-eyebrow">ZXZR / PHOTO ARCHIVE</p>
+                  <h2>这一页的故事</h2>
+                </div>
+                <span class="sheet-page-number" id="sheetPageNumber">01</span>
+              </div>
+              <div class="photo-grid" id="photoGrid" role="list" aria-label="本页照片"></div>
+              <div class="sheet-footer">
+                <span id="sheetPhotoCount">等待第一张照片</span>
+                <span>留住此刻 · 珍藏往后</span>
+              </div>
+            </div>
+          </article>
+
+          <button class="album-cover" id="albumCover" type="button" aria-label="向右滑动或点击，翻开相簿">
+            <span class="cover-spine" aria-hidden="true"></span>
+            <span class="cover-stitch" aria-hidden="true"></span>
+            <span class="cover-inner">
+              <span class="cover-overline">A COLLECTION OF MOMENTS</span>
+              <span class="cover-image-wrap">
+                <img class="cover-image" src="./assets/cover-flowers.png" alt="一束红色与浅粉色玫瑰" draggable="false">
+              </span>
+              <span class="cover-title">时光相簿</span>
+              <span class="cover-rule" aria-hidden="true">✦</span>
+              <span class="cover-subtitle">ZXZR · 珍藏每一刻</span>
+            </span>
+            <span class="cover-corner cover-corner--tl" aria-hidden="true"></span>
+            <span class="cover-corner cover-corner--tr" aria-hidden="true"></span>
+            <span class="cover-corner cover-corner--bl" aria-hidden="true"></span>
+            <span class="cover-corner cover-corner--br" aria-hidden="true"></span>
+          </button>
+        </div>
+
+        <div class="album-controls">
+          <button class="text-button" id="closeAlbum" type="button" hidden>合上相簿</button>
+          <button class="primary-button" id="openPrompt" type="button">向右翻开相簿 <span aria-hidden="true">→</span></button>
+          <div class="page-controls" id="pageControls" hidden>
+            <button class="icon-button" id="previousPage" type="button" aria-label="上一页">←</button>
+            <span id="pageIndicator" aria-live="polite">1 / 1</span>
+            <button class="icon-button" id="nextPage" type="button" aria-label="下一页">→</button>
+          </div>
+          <button class="text-button upload-toggle" id="ownerToggle" type="button" aria-expanded="false" aria-controls="ownerPanel">添加照片</button>
+        </div>
+        <p class="album-status" id="albumStatus" role="status" aria-live="polite">正在准备相簿…</p>
+        <p class="gesture-hint">封面向右滑动即可翻开；内页左右滑动可翻页。点击照片查看大图。</p>
+      </section>
+
+      <section class="owner-panel" id="ownerPanel" aria-labelledby="ownerHeading" hidden>
+        <div class="owner-panel-heading">
+          <div>
+            <p class="eyebrow">KEEP THE STORY GOING</p>
+            <h2 id="ownerHeading">添加新照片</h2>
+          </div>
+          <button class="panel-close" id="ownerClose" type="button" aria-label="关闭添加照片面板">×</button>
+        </div>
+        <p class="owner-message" id="ownerMessage" role="status" aria-live="polite"></p>
+        <form id="signInForm" class="owner-form" hidden>
+          <label for="ownerEmail">站长邮箱</label>
+          <input id="ownerEmail" name="email" type="email" autocomplete="username" required>
+          <label for="ownerPassword">密码</label>
+          <input id="ownerPassword" name="password" type="password" autocomplete="current-password" required>
+          <button class="primary-button" id="signInButton" type="submit">登录后上传</button>
+        </form>
+        <form id="uploadForm" class="owner-form" hidden>
+          <label for="photoFiles">选择照片（可多选）</label>
+          <input id="photoFiles" name="photos" type="file" accept="image/jpeg,image/png,image/webp,image/gif,image/avif" multiple required>
+          <p class="form-note">支持 JPG、PNG、WebP、GIF、AVIF；单张不超过 10 MB。文件名会用作照片标题。上传后任何人都能查看；原图可能含 GPS 等拍摄信息，请先自行清除敏感元数据。</p>
+          <div class="owner-actions">
+            <button class="primary-button" id="uploadButton" type="submit">上传到相簿</button>
+            <button class="text-button" id="signOutButton" type="button">退出登录</button>
+          </div>
+        </form>
+      </section>
+    </main>
+
+    <dialog class="photo-viewer" id="photoViewer" aria-label="照片大图">
+      <div class="viewer-top">
+        <span id="viewerCounter"></span>
+        <button class="viewer-close" id="closeViewer" type="button" aria-label="关闭照片大图">×</button>
+      </div>
+      <div class="viewer-photo-wrap">
+        <button class="viewer-arrow" id="previousPhoto" type="button" aria-label="上一张照片">←</button>
+        <img id="viewerImage" alt="">
+        <button class="viewer-arrow" id="nextPhoto" type="button" aria-label="下一张照片">→</button>
+      </div>
+      <p class="viewer-caption" id="viewerCaption"></p>
+    </dialog>
+  </body>
+</html>
