@@ -1,6 +1,6 @@
 # Album
 
-A static photo album for GitHub Pages. Visitors can browse publicly. The owner can upload from the website after connecting Supabase. The cover opens by tap or right swipe; each transparent page holds 20 photos. The layout works on phones and desktops without a build step or CDN.
+A static photo album for GitHub Pages. Visitors can browse publicly. The owner can upload from the website after connecting Supabase. The kraft-paper cover carries an oil painting of the bouquet and opens by tap or right swipe; each transparent page holds 20 photos. The layout works on phones and desktops without a build step or CDN.
 
 At this repository's default GitHub Pages address, the album is available at `https://zhouxuan-git.github.io/zxzr/`. The path contains `zxzr`. For a domain name containing those letters, register a custom domain and connect it in GitHub Pages and DNS. Domain availability depends on the registrar.
 
@@ -71,4 +71,4 @@ From the repository root, run `python3 -m http.server 8000` and open `http://loc
 
 ## License
 
-The website source code and documentation in this directory are available under the [MIT License](./LICENSE). The cover artwork (`assets/cover-flowers.png` and `assets/leather-texture.png`) is **excluded from the MIT License**. Future uploads and photos in `assets/photos/` are also excluded unless their owners grant permission separately.
+The website source code and documentation in this directory are available under the [MIT License](./LICENSE). The cover artwork (`assets/cover-painting.webp` and `assets/kraft-texture.webp`) is **excluded from the MIT License**. Future uploads and photos in `assets/photos/` are also excluded unless their owners grant permission separately.
