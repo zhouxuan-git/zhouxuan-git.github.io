@@ -67,13 +67,13 @@
   async function loadStaticPhotos() {
     try {
       const response = await fetch("./photos.json", { cache: "no-store" });
-      if (!response.ok) throw new Error("无法读取本地照片目录");
+      if (!response.ok) throw new Error("Could not load the local photo list");
       const entries = await response.json();
-      if (!Array.isArray(entries)) throw new Error("照片目录格式不正确");
+      if (!Array.isArray(entries)) throw new Error("Invalid local photo list");
       return entries.flatMap((entry, index) => {
         const src = safePhotoUrl(entry?.src);
         if (!src) return [];
-        const caption = cleanTitle(entry.caption, `照片 ${index + 1}`);
+        const caption = cleanTitle(entry.caption, `Photo ${index + 1}`);
         return [{ src, caption, alt: cleanTitle(entry.alt, caption) }];
       });
     } catch (error) {
@@ -94,7 +94,7 @@
     if (body !== undefined && contentType) headers["Content-Type"] = contentType;
     const response = await fetch(`${baseUrl}${path}`, { method, headers, body });
     if (!response.ok) {
-      let message = `请求失败 (${response.status})`;
+      let message = `Request failed (${response.status})`;
       try {
         const data = await response.json();
         message = data.message || data.msg || data.error_description || data.error || message;
@@ -108,7 +108,7 @@
 
   function captionFromStoredName(name) {
     const bareName = name.replace(/^\d{13}-[0-9a-f-]{16,36}-/i, "").replace(/\.[^.]+$/, "");
-    return cleanTitle(bareName, "未命名照片");
+    return cleanTitle(bareName, "Untitled photo");
   }
 
   async function loadOnlinePhotos() {
@@ -120,7 +120,7 @@
         body: JSON.stringify({ prefix: "photos", limit, offset, sortBy: { column: "created_at", order: "desc" } })
       });
       const entries = await response.json();
-      if (!Array.isArray(entries)) throw new Error("照片列表格式不正确");
+      if (!Array.isArray(entries)) throw new Error("Invalid photo list");
       for (const entry of entries) {
         if (!entry || typeof entry.name !== "string") continue;
         const name = entry.name.split("/").pop();
@@ -150,9 +150,8 @@
     });
     page = Math.min(page, pageTotal() - 1);
     renderPage();
-    if (onlineError) setStatus(`在线照片暂时无法读取${staticPhotos.length ? "，当前展示本地照片" : ""}。请稍后重试。`);
-    else if (!onlineReady) setStatus(photos.length ? `已收录 ${photos.length} 张照片。在线上传尚未启用。` : "相簿已就绪。在线上传尚未启用。");
-    else setStatus(photos.length ? `已收录 ${photos.length} 张照片，欢迎慢慢翻看。` : "相簿还没有照片，等待第一张照片。 ");
+    if (onlineError) setStatus(`Online photos are unavailable${staticPhotos.length ? "; showing local photos" : ""}. Please try again later.`);
+    else setStatus("");
     return !onlineError;
   }
 
@@ -169,7 +168,7 @@
         const button = document.createElement("button");
         button.className = "photo-button";
         button.type = "button";
-        button.setAttribute("aria-label", `查看第 ${index + 1} 张照片：${photo.caption}`);
+        button.setAttribute("aria-label", `View photo ${index + 1}: ${photo.caption}`);
         button.addEventListener("click", () => openViewer(index));
         const image = document.createElement("img");
         image.src = photo.src;
@@ -183,15 +182,15 @@
         pocket.classList.add("pocket--empty");
         const number = document.createElement("span");
         number.textContent = String(index + 1).padStart(2, "0");
-        pocket.setAttribute("aria-label", `空相片位 ${index + 1}`);
+        pocket.setAttribute("aria-label", `Empty photo slot ${index + 1}`);
         pocket.append(number);
       }
       fragment.append(pocket);
     }
     grid.replaceChildren(fragment);
-    grid.setAttribute("aria-label", `第 ${page + 1} 页照片，共 ${pageTotal()} 页`);
+    grid.setAttribute("aria-label", `Photos on page ${page + 1} of ${pageTotal()}`);
     $("sheetPageNumber").textContent = String(page + 1).padStart(2, "0");
-    $("sheetPhotoCount").textContent = photos.length ? `本页 ${page * PAGE_SIZE + 1}–${Math.min((page + 1) * PAGE_SIZE, photos.length)} / 共 ${photos.length} 张` : "等待第一张照片";
+    $("sheetPhotoCount").textContent = photos.length ? `${page * PAGE_SIZE + 1}–${Math.min((page + 1) * PAGE_SIZE, photos.length)} / ${photos.length} photos` : "";
     pageIndicator.textContent = `${page + 1} / ${pageTotal()}`;
     previousPage.disabled = page === 0;
     nextPage.disabled = page >= pageTotal() - 1;
@@ -250,20 +249,20 @@
   function updateOwnerPanel() {
     signInForm.hidden = !onlineReady || Boolean(accessToken);
     uploadForm.hidden = !onlineReady || !accessToken;
-    if (!onlineReady) setOwnerMessage("在线上传尚未启用，站长配置照片存储后即可从这里上传。");
-    else if (accessToken) setOwnerMessage("已登录。选取照片后即可上传到公开相簿。");
-    else setOwnerMessage("仅相簿站长可以上传。请使用站长账号登录。");
+    if (!onlineReady) setOwnerMessage("Online uploads are unavailable until the owner connects photo storage.");
+    else if (accessToken) setOwnerMessage("Signed in. Select photos to upload.");
+    else setOwnerMessage("Only the album owner can upload. Sign in to continue.");
   }
 
   function storeSession(session) {
-    if (!session.access_token) throw new Error("未收到登录凭证");
+    if (!session.access_token) throw new Error("No sign-in token received");
     accessToken = session.access_token;
     refreshToken = session.refresh_token || "";
     tokenExpiresAt = (session.expires_at ? session.expires_at * 1000 : Date.now() + (session.expires_in || 3600) * 1000);
   }
 
   async function refreshSession() {
-    if (!refreshToken) throw new Error("登录已过期，请重新登录后上传。");
+    if (!refreshToken) throw new Error("Session expired. Sign in again to upload.");
     try {
       const response = await apiRequest("/auth/v1/token?grant_type=refresh_token", {
         method: "POST",
@@ -275,12 +274,12 @@
       refreshToken = "";
       tokenExpiresAt = 0;
       updateOwnerPanel();
-      throw new Error("登录已过期，请重新登录后上传。");
+      throw new Error("Session expired. Sign in again to upload.");
     }
   }
 
   async function ensureSession() {
-    if (!accessToken) throw new Error("请先登录。");
+    if (!accessToken) throw new Error("Sign in first.");
     if (Date.now() > tokenExpiresAt - 60000) await refreshSession();
   }
 
@@ -298,7 +297,7 @@
     event.preventDefault();
     const button = $("signInButton");
     button.disabled = true;
-    setOwnerMessage("正在登录…");
+    setOwnerMessage("Signing in…");
     try {
       const response = await apiRequest("/auth/v1/token?grant_type=password", {
         method: "POST",
@@ -310,14 +309,14 @@
       updateOwnerPanel();
       $("photoFiles").focus();
     } catch (error) {
-      setOwnerMessage(`登录失败：${error.message}`);
+      setOwnerMessage(`Sign-in failed: ${error.message}`);
     } finally { button.disabled = false; }
   }
 
   function uploadName(file) {
     const extension = FILE_TYPES.get(file.type);
     const originalStem = file.name.replace(/\.[^.]+$/, "");
-    const stem = originalStem.normalize("NFC").replace(/[\\/?#%\u0000-\u001f\u007f]/g, "_").trim().slice(0, 80) || "照片";
+    const stem = originalStem.normalize("NFC").replace(/[\\/?#%\u0000-\u001f\u007f]/g, "_").trim().slice(0, 80) || "photo";
     const random = crypto.randomUUID ? crypto.randomUUID() : Array.from(crypto.getRandomValues(new Uint8Array(16)), (n) => n.toString(16).padStart(2, "0")).join("");
     return `${Date.now()}-${random}-${stem}.${extension}`;
   }
@@ -328,7 +327,7 @@
     if (!files.length) return;
     const invalid = files.find((file) => !FILE_TYPES.has(file.type) || file.size > MAX_FILE_BYTES || file.size === 0);
     if (invalid) {
-      setOwnerMessage(`“${invalid.name}”格式不支持、为空，或超过 10 MB。请重新选择。`);
+      setOwnerMessage(`"${invalid.name}" is unsupported, empty, or over 10 MB. Choose another file.`);
       return;
     }
     const button = $("uploadButton");
@@ -336,7 +335,7 @@
     let uploaded = 0;
     try {
       for (const file of files) {
-        setOwnerMessage(`正在上传 ${uploaded + 1} / ${files.length}：${file.name}`);
+        setOwnerMessage(`Uploading ${uploaded + 1} / ${files.length}: ${file.name}`);
         const path = `photos/${uploadName(file)}`;
         const endpoint = `/storage/v1/object/${encodeURIComponent(bucket)}/${path.split("/").map(encodeURIComponent).join("/")}`;
         const uploadOne = () => apiRequest(endpoint, {
@@ -355,9 +354,9 @@
       $("photoFiles").value = "";
       page = 0;
       const refreshed = await refreshPhotos();
-      setOwnerMessage(refreshed ? `已上传 ${uploaded} 张照片，相簿已更新。` : `已上传 ${uploaded} 张照片，但列表暂时无法刷新。请稍后重试。`);
+      setOwnerMessage(refreshed ? `Uploaded ${uploaded} photos. Album updated.` : `Uploaded ${uploaded} photos, but the list could not refresh. Please try again later.`);
     } catch (error) {
-      setOwnerMessage(`已上传 ${uploaded} / ${files.length} 张。上传中断：${error.message}`);
+      setOwnerMessage(`Uploaded ${uploaded} / ${files.length} photos. Upload stopped: ${error.message}`);
       if (uploaded) await refreshPhotos();
     } finally { button.disabled = false; }
   }

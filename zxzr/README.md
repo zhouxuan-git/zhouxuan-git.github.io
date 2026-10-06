@@ -1,17 +1,17 @@
-# ZXZR 时光相簿
+# Album
 
-这是一个可直接放在 GitHub Pages 上的静态相簿。访客可以公开浏览；站长登录后可从网页上传照片。封面点击或向右滑动翻开，内页每页固定 20 个透明相片位，支持翻页和查看大图。页面可在手机和电脑使用，不依赖 CDN 或打包工具。
+A static photo album for GitHub Pages. Visitors can browse publicly. The owner can upload from the website after connecting Supabase. The cover opens by tap or right swipe; each transparent page holds 20 photos. The layout works on phones and desktops without a build step or CDN.
 
-部署在当前仓库时，网址为 `https://zhouxuan-git.github.io/zxzr/`。网址路径包含 `zxzr`；如果需要**域名本身**包含 `zxzr`，须另行注册域名并在 GitHub Pages 设置和 DNS 中绑定。域名是否可注册取决于注册商。
+At this repository's default GitHub Pages address, the album is available at `https://zhouxuan-git.github.io/zxzr/`. The path contains `zxzr`. For a domain name containing those letters, register a custom domain and connect it in GitHub Pages and DNS. Domain availability depends on the registrar.
 
-## 从网站直接上传：一次性配置
+## Enable website uploads
 
-1. 创建一个 Supabase 项目。在 **Authentication → Users** 中手动创建唯一的站长账号，确认邮箱已验证且可用密码登录，记下该用户的 UUID。关闭公开自助注册；不要让访客自行注册。邮箱和密码不要写进仓库。若日后使用邀请、邮箱确认或找回密码邮件，在 **Authentication → URL Configuration** 中将 Site URL 和允许的 Redirect URLs 设为 `https://zhouxuan-git.github.io/zxzr/`；如绑定了自定义域名，也加入新网址。普通密码登录本身无需重定向。
-2. 在 Supabase 的 SQL Editor 中运行下面的 SQL。**先将两处 `00000000-0000-0000-0000-000000000000` 替换为站长的 Auth 用户 UUID。** 它创建公开读取的存储桶；只有该用户能在 `photos/` 上传或删除，且不允许覆盖更新已有文件。若已建立同名策略，先在 Storage Policies 中检查，避免重复创建。
-3. 在 Project Settings → API 中复制项目 URL 和 **publishable key**（旧项目可用 `anon` key），填入 [`config.js`](./config.js)。这些是公开的前端配置，保护上传权限的是下面的服务端策略。**绝对不要填写 `service_role` / secret key。**
-4. 将仓库变更推送到 `main` 并确认 GitHub Pages 已启用。站长打开相簿，点“添加照片”，用创建的账号登录后可一次选择多张照片上传。新照片会自动显示在第一页。刷新页面后需重新登录，密码不会保存在浏览器。
+1. Create a Supabase project. In **Authentication → Users**, create one owner account, verify its email, make sure password sign-in works, and copy its user UUID. Disable public sign-ups. Keep the email and password out of the repository. If you later use invitations, email confirmation, or password recovery, set the Site URL and allowed Redirect URLs under **Authentication → URL Configuration** to `https://zhouxuan-git.github.io/zxzr/` and any custom domain. Ordinary password sign-in does not redirect.
+2. Run the SQL below in the Supabase SQL Editor. **Replace both instances of `00000000-0000-0000-0000-000000000000` with the owner's Auth user UUID.** It creates a publicly readable bucket and permits only that user to upload or delete files under `photos/`. It does not permit overwriting existing files. Check Storage Policies first if policies with these names already exist.
+3. Copy the project URL and **publishable key** (or the legacy `anon` key) from **Project Settings → API** into [`config.js`](./config.js). These settings are public; the server-side policies protect uploads. **Never put a `service_role` or secret key in this file.**
+4. Push the changes to `main` and make sure GitHub Pages is enabled. Open the album, select **Add Photos**, sign in, and select one or more photos. New photos appear first. Sign in again after refreshing the page; the browser does not save the password.
 
-仓库随附的 `config.js` 目前为空；在填入自己的 Supabase 项目配置并实际执行上传前，在线上传和访问策略尚未经过真实项目验证。页面会明确显示“在线上传尚未启用”。
+The included `config.js` has empty project settings. Website uploads remain unavailable until the Supabase project is configured. Uploads and policies have not been verified against a live Supabase project yet.
 
 ```sql
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
@@ -47,28 +47,28 @@ using (
 );
 ```
 
-公开存储意味着任何知道网址的人都可查看照片。上传使用原始文件，照片可能保留拍摄位置等 EXIF 元数据；请在上传前清除不希望公开的信息。文件名会成为相簿中的标题。若需要删除照片，可在 Supabase Storage 管理后台操作；网页目前只提供新增功能。
+Anyone with the URL can view photos. Uploaded originals may retain GPS or other EXIF metadata; remove private metadata before uploading. File names become captions. To delete a photo, use the Supabase Storage dashboard. The website currently supports adding photos only.
 
-## 不使用在线上传时，手动添加照片
+## Add photos through the repository
 
-相簿也能从仓库中的 [`photos.json`](./photos.json) 读取照片。将图片加入 `assets/photos/`，再在 JSON 数组中加入一项：
+The album also reads [`photos.json`](./photos.json). Put images in `assets/photos/` and add entries to the JSON array:
 
 ```json
 [
   {
     "src": "./assets/photos/example.jpg",
-    "caption": "这一天的花",
-    "alt": "花束放在桌上"
+    "caption": "A day with flowers",
+    "alt": "A bouquet on a table"
   }
 ]
 ```
 
-每 20 张自动生成一页。Supabase 配好后，在线照片会显示在手动添加的照片前面。静态网站无法直接写入 GitHub 仓库；网页直接上传需要按前述步骤配置 Supabase。
+A new page is generated every 20 photos. When Supabase is configured, uploaded photos appear before repository photos. A static website cannot write directly to its GitHub repository; direct website uploads require Supabase as described above.
 
-## 本地预览
+## Local preview
 
-在仓库根目录运行 `python3 -m http.server 8000`，打开 `http://localhost:8000/zxzr/`。相簿界面无需安装依赖。`photos.json` 需要通过 HTTP 读取，因此不要直接用 `file://` 打开。
+From the repository root, run `python3 -m http.server 8000` and open `http://localhost:8000/zxzr/`. No dependencies are required. Open the page over HTTP so it can fetch `photos.json`; do not open it with `file://`.
 
-## 授权
+## License
 
-本目录中的网页源代码和说明文档按 [MIT License](./LICENSE) 开源。`assets/cover-flowers.png` 是用户提供照片加工而成，**不包含在 MIT 授权中**；日后上传的照片及 `assets/photos/` 中的照片也不自动按 MIT 授权。请取得照片权利人的许可后再复用。
+The website source code and documentation in this directory are available under the [MIT License](./LICENSE). The cover artwork (`assets/cover-flowers.png` and `assets/leather-texture.png`) is **excluded from the MIT License**. Future uploads and photos in `assets/photos/` are also excluded unless their owners grant permission separately.
