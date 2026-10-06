@@ -3,6 +3,7 @@
 
   const PAGE_SIZE = 20;
   const MAX_FILE_BYTES = 10 * 1024 * 1024;
+  const MAX_CONVERTED_EDGE = 4096;
   const FILE_TYPES = new Map([
     ["image/jpeg", "jpg"],
     ["image/png", "png"],
@@ -10,6 +11,7 @@
     ["image/gif", "gif"],
     ["image/avif", "avif"]
   ]);
+  const HEIC_TYPES = new Set(["image/heic", "image/heif", "image/heic-sequence", "image/heif-sequence"]);
   const rawConfig = window.ZXZR_CONFIG || {};
   let baseUrl = "";
   try {
@@ -325,11 +327,63 @@
     return `${Date.now()}-${random}-${stem}.${extension}`;
   }
 
+  function isHeic(file) {
+    return HEIC_TYPES.has(file.type.toLowerCase()) || (!FILE_TYPES.has(file.type) && /\.(heic|heif)$/i.test(file.name));
+  }
+
+  async function decodeHeic(file) {
+    if (typeof createImageBitmap === "function") {
+      try {
+        const bitmap = await createImageBitmap(file);
+        return { image: bitmap, width: bitmap.width, height: bitmap.height, dispose: () => bitmap.close() };
+      } catch { /* Some browsers can decode HEIC in an image element instead. */ }
+    }
+
+    const url = URL.createObjectURL(file);
+    try {
+      const image = await new Promise((resolve, reject) => {
+        const element = new Image();
+        element.onload = () => resolve(element);
+        element.onerror = () => reject(new Error("Image decoding failed"));
+        element.src = url;
+      });
+      return { image, width: image.naturalWidth, height: image.naturalHeight, dispose: () => URL.revokeObjectURL(url) };
+    } catch (error) {
+      URL.revokeObjectURL(url);
+      throw error;
+    }
+  }
+
+  async function convertHeicToJpeg(file) {
+    let decoded;
+    let canvas;
+    try {
+      decoded = await decodeHeic(file);
+      if (!decoded.width || !decoded.height) throw new Error("Image has no dimensions");
+      const scale = Math.min(1, MAX_CONVERTED_EDGE / Math.max(decoded.width, decoded.height));
+      canvas = document.createElement("canvas");
+      canvas.width = Math.max(1, Math.round(decoded.width * scale));
+      canvas.height = Math.max(1, Math.round(decoded.height * scale));
+      const context = canvas.getContext("2d");
+      if (!context) throw new Error("Canvas is unavailable");
+      context.drawImage(decoded.image, 0, 0, canvas.width, canvas.height);
+      const jpeg = await new Promise((resolve) => canvas.toBlob(resolve, "image/jpeg", 0.88));
+      if (!jpeg?.size) throw new Error("JPEG conversion failed");
+      const stem = file.name.replace(/\.[^.]+$/, "") || "photo";
+      return new File([jpeg], `${stem}.jpg`, { type: "image/jpeg", lastModified: file.lastModified });
+    } catch {
+      throw new Error(`Could not convert "${file.name}" on this device. Export it as JPG and try again.`);
+    } finally {
+      decoded?.dispose();
+      if (canvas) { canvas.width = 0; canvas.height = 0; }
+    }
+  }
+
   async function uploadPhotos(event) {
     event.preventDefault();
     const files = Array.from($("photoFiles").files || []);
     if (!files.length) return;
-    const invalid = files.find((file) => !FILE_TYPES.has(file.type) || file.size > MAX_FILE_BYTES || file.size === 0);
+    const invalid = files.find((file) => (!FILE_TYPES.has(file.type) && !isHeic(file)) || (!isHeic(file) && file.size > MAX_FILE_BYTES) || file.size === 0);
     if (invalid) {
       setOwnerMessage(`"${invalid.name}" is unsupported, empty, or over 10 MB. Choose another file.`);
       return;
@@ -338,8 +392,11 @@
     button.disabled = true;
     let uploaded = 0;
     try {
-      for (const file of files) {
-        setOwnerMessage(`Uploading ${uploaded + 1} / ${files.length}: ${file.name}`);
+      for (const original of files) {
+        if (isHeic(original)) setOwnerMessage(`Converting ${uploaded + 1} / ${files.length}: ${original.name}`);
+        const file = isHeic(original) ? await convertHeicToJpeg(original) : original;
+        if (file.size > MAX_FILE_BYTES) throw new Error(`"${original.name}" is over 10 MB after conversion. Export a smaller JPG and try again.`);
+        setOwnerMessage(`Uploading ${uploaded + 1} / ${files.length}: ${original.name}`);
         const path = `photos/${uploadName(file)}`;
         const endpoint = `/storage/v1/object/${encodeURIComponent(bucket)}/${path.split("/").map(encodeURIComponent).join("/")}`;
         const uploadOne = () => apiRequest(endpoint, {

@@ -3,6 +3,6 @@
 // Never put a service_role or secret key in this file.
 window.ZXZR_CONFIG = {
   supabaseUrl: "https://yjwdwrccmhvbraxlabrz.supabase.co",
-  anonKey: "",
+  anonKey: "sb_publishable_t1Ud0EPGg8SC0N0g82zpaw_o-ZZAawb",
   bucket: "zxzr-photos"
 };

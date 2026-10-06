@@ -73,8 +73,8 @@
         </form>
         <form id="uploadForm" class="owner-form" hidden>
           <label for="photoFiles">Choose photos</label>
-          <input id="photoFiles" name="photos" type="file" accept="image/jpeg,image/png,image/webp,image/gif,image/avif" multiple required>
-          <p class="form-note">JPG, PNG, WebP, GIF, or AVIF. Up to 10 MB per photo. File names become captions. Uploaded photos are public; remove private location metadata before uploading.</p>
+          <input id="photoFiles" name="photos" type="file" accept="image/jpeg,image/png,image/webp,image/gif,image/avif,image/heic,image/heif,.heic,.heif" multiple required>
+          <p class="form-note">JPG, PNG, WebP, GIF, AVIF, HEIC, or HEIF. HEIC/HEIF photos are converted to JPG on this device. Up to 10 MB per uploaded photo. File names become captions. Uploaded photos are public; remove private location metadata before uploading.</p>
           <div class="owner-actions">
             <button class="primary-button" id="uploadButton" type="submit">Upload</button>
             <button class="text-button" id="signOutButton" type="button">Sign Out</button>
