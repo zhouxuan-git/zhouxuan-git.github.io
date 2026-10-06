@@ -11,6 +11,8 @@ At this repository's default GitHub Pages address, the album is available at `ht
 3. Confirm the project URL and **publishable key** (or the legacy `anon` key) in [`config.js`](./config.js). These settings are public; the server-side policies protect uploads. **Never put a `service_role` or secret key in this file.**
 4. Push the changes to `main` and make sure GitHub Pages is enabled. Open the album, select **Add Photos**, sign in, and select one or more photos. New photos appear first. Sign in again after refreshing the page; the browser does not save the password.
 
+When changing `config.js` or `app.js`, change their `?v=` values in `index.html` so browsers fetch the new files instead of a cached copy.
+
 **Where to find the owner UID:** In the Supabase project dashboard, open **Authentication → Users** and click the row for the email you will use to sign in to the album. Copy its **UID** (sometimes labeled **User ID** or **id**) from the user details. If there is no row, create an Auth user first; your Supabase dashboard account is not automatically an album user. You can also run `select id, email from auth.users;` in the SQL Editor; the `id` beside your album owner's email is the UID. Do not use the project ID.
 
 The project URL and publishable key are set in `config.js`. The website now shows **Add Photos**. Uploads require the Storage SQL below and a confirmed owner Auth account; live upload has not yet been verified.
