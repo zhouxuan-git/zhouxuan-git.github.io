@@ -11,7 +11,7 @@ At this repository's default GitHub Pages address, the album is available at `ht
 3. Copy the project URL and **publishable key** (or the legacy `anon` key) from **Project Settings → API** into [`config.js`](./config.js). These settings are public; the server-side policies protect uploads. **Never put a `service_role` or secret key in this file.**
 4. Push the changes to `main` and make sure GitHub Pages is enabled. Open the album, select **Add Photos**, sign in, and select one or more photos. New photos appear first. Sign in again after refreshing the page; the browser does not save the password.
 
-The included `config.js` has empty project settings. Website uploads remain unavailable until the Supabase project is configured. Uploads and policies have not been verified against a live Supabase project yet.
+The included `config.js` has empty project settings. Until a Supabase project is connected, the website shows **Set Up Uploads** instead of an upload form. Uploads and policies have not been verified against a live Supabase project yet.
 
 ```sql
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)

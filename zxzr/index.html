@@ -50,7 +50,7 @@
             <span id="pageIndicator" aria-live="polite">1 / 1</span>
             <button class="icon-button" id="nextPage" type="button" aria-label="Next page">→</button>
           </div>
-          <button class="text-button upload-toggle" id="ownerToggle" type="button" aria-expanded="false" aria-controls="ownerPanel">Add Photos</button>
+          <button class="text-button upload-toggle" id="ownerToggle" type="button" aria-expanded="false" aria-controls="ownerPanel">Set Up Uploads</button>
         </div>
         <p class="album-status" id="albumStatus" role="status" aria-live="polite">Loading album…</p>
       </section>
@@ -58,11 +58,12 @@
       <section class="owner-panel" id="ownerPanel" aria-labelledby="ownerHeading" hidden>
         <div class="owner-panel-heading">
           <div>
-            <h2 id="ownerHeading">Add Photos</h2>
+            <h2 id="ownerHeading">Set Up Uploads</h2>
           </div>
           <button class="panel-close" id="ownerClose" type="button" aria-label="Close add photos panel">×</button>
         </div>
         <p class="owner-message" id="ownerMessage" role="status" aria-live="polite"></p>
+        <p class="setup-help" id="setupHelp" hidden><a href="https://github.com/zhouxuan-git/zhouxuan-git.github.io/blob/main/zxzr/README.md#enable-website-uploads" target="_blank" rel="noopener noreferrer">Open the owner's setup guide ↗</a></p>
         <form id="signInForm" class="owner-form" hidden>
           <label for="ownerEmail">Owner email</label>
           <input id="ownerEmail" name="email" type="email" autocomplete="username" required>

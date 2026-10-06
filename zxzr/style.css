@@ -298,6 +298,8 @@ button:focus-visible, a:focus-visible, input:focus-visible {
 .owner-panel h2 { margin: 0; font-size: 21px; font-weight: 500; }
 .panel-close, .viewer-close { border: 0; background: transparent; color: inherit; font: 30px/1 system-ui, sans-serif; }
 .owner-message { min-height: 20px; margin: 18px 0 4px; color: #6a594b; font: 13px/1.5 system-ui, sans-serif; }
+.setup-help { margin: 8px 0 0; font: 600 13px/1.5 system-ui, sans-serif; }
+.setup-help a { color: #514739; text-underline-offset: 3px; }
 .owner-form { display: grid; gap: 8px; margin-top: 16px; font: 13px/1.5 system-ui, sans-serif; }
 .owner-form label { font-weight: 600; }
 .owner-form input[type="email"], .owner-form input[type="password"], .owner-form input[type="file"] {

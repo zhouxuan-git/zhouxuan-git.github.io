@@ -39,6 +39,9 @@
   const uploadForm = $("uploadForm");
   const viewer = $("photoViewer");
 
+  ownerToggle.textContent = onlineReady ? "Add Photos" : "Set Up Uploads";
+  $("ownerHeading").textContent = ownerToggle.textContent;
+
   let photos = [];
   let page = 0;
   let opened = false;
@@ -249,7 +252,8 @@
   function updateOwnerPanel() {
     signInForm.hidden = !onlineReady || Boolean(accessToken);
     uploadForm.hidden = !onlineReady || !accessToken;
-    if (!onlineReady) setOwnerMessage("Online uploads are unavailable until the owner connects photo storage.");
+    $("setupHelp").hidden = onlineReady;
+    if (!onlineReady) setOwnerMessage("Uploads are not set up yet. The album owner must connect photo storage first.");
     else if (accessToken) setOwnerMessage("Signed in. Select photos to upload.");
     else setOwnerMessage("Only the album owner can upload. Sign in to continue.");
   }
@@ -288,7 +292,7 @@
     ownerToggle.setAttribute("aria-expanded", String(value));
     if (value) {
       updateOwnerPanel();
-      ownerPanel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      ownerPanel.scrollIntoView({ behavior: "smooth", block: "start" });
       if (onlineReady) (accessToken ? $("photoFiles") : $("ownerEmail")).focus();
     } else ownerToggle.focus();
   }
