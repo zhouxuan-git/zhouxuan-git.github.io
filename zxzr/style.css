@@ -325,10 +325,15 @@ button:focus-visible, a:focus-visible, input:focus-visible {
 .viewer-top { display: flex; align-items: center; justify-content: space-between; min-height: 30px; font: 12px/1.4 system-ui, sans-serif; letter-spacing: .1em; }
 .viewer-close { color: #f5e5d7; }
 .viewer-photo-wrap { display: grid; grid-template-columns: 42px minmax(0, 1fr) 42px; align-items: center; gap: 8px; margin-top: 6px; }
-.viewer-photo-wrap img { display: block; max-width: 100%; max-height: calc(100dvh - 150px); width: auto; height: auto; margin: auto; object-fit: contain; }
+.viewer-photo-wrap img { display: block; max-width: 100%; max-height: calc(100dvh - 205px); width: auto; height: auto; margin: auto; object-fit: contain; }
 .viewer-arrow { width: 40px; height: 40px; border: 1px solid rgba(255,255,255,.28); border-radius: 50%; background: rgba(255,255,255,.1); color: white; font-size: 19px; }
 .viewer-arrow:hover:not(:disabled) { background: rgba(255,255,255,.25); }
 .viewer-caption { min-height: 23px; margin: 11px 45px 3px; text-align: center; font-size: 14px; line-height: 1.5; }
+.viewer-actions { display: grid; justify-items: center; gap: 5px; margin: 5px 0 0; font: 12px/1.4 system-ui, sans-serif; }
+.viewer-delete { min-height: 36px; padding: 7px 15px; border: 1px solid rgba(255, 210, 197, .5); border-radius: 999px; background: rgba(164, 75, 64, .18); color: #ffe6de; font: 600 12px/1.4 system-ui, sans-serif; }
+.viewer-delete:hover:not(:disabled) { background: rgba(164, 75, 64, .34); }
+.viewer-message { min-height: 17px; margin: 0; text-align: center; color: #ffe6de; }
+.viewer-message:empty { display: none; }
 
 @media (max-width: 700px) {
   .site-shell { width: min(100% - 24px, 540px); padding-top: 16px; }
@@ -348,6 +353,7 @@ button:focus-visible, a:focus-visible, input:focus-visible {
   .viewer-photo-wrap { grid-template-columns: 30px minmax(0, 1fr) 30px; gap: 2px; }
   .viewer-arrow { width: 28px; height: 34px; border: 0; border-radius: 5px; }
   .viewer-caption { margin-inline: 22px; }
+  .viewer-delete { min-height: 42px; }
 }
 
 @media (max-width: 360px) {

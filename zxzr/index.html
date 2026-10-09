@@ -6,9 +6,9 @@
     <meta name="theme-color" content="#32251f">
     <meta name="description" content="Album">
     <title>Album</title>
-    <link rel="stylesheet" href="./style.css">
+    <link rel="stylesheet" href="./style.css?v=20261009-delete">
     <script defer src="./config.js?v=20261006-uploads"></script>
-    <script defer src="./app.js?v=20261006-uploads"></script>
+    <script defer src="./app.js?v=20261009-delete"></script>
   </head>
   <body>
     <main class="site-shell">
@@ -94,6 +94,10 @@
         <button class="viewer-arrow" id="nextPhoto" type="button" aria-label="Next photo">→</button>
       </div>
       <p class="viewer-caption" id="viewerCaption"></p>
+      <div class="viewer-actions">
+        <button class="viewer-delete" id="deletePhotoButton" type="button" hidden>Delete Photo</button>
+        <p class="viewer-message" id="viewerMessage" role="status" aria-live="polite"></p>
+      </div>
     </dialog>
   </body>
 </html>

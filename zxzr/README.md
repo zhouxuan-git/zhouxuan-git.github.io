@@ -55,7 +55,7 @@ using (
 );
 ```
 
-Anyone with the URL can view photos. Uploaded originals may retain GPS or other EXIF metadata; remove private metadata before uploading. File names become captions. To delete a photo, use the Supabase Storage dashboard. The website currently supports adding photos only.
+Anyone with the URL can view photos. Uploaded originals may retain GPS or other EXIF metadata; remove private metadata before uploading. File names become captions. To remove an uploaded photo, sign in as the owner, open the photo, and choose **Delete Photo**. Confirm the deletion; it cannot be undone. The owner can also delete files in **Supabase Storage → zxzr-photos → photos**. Repository photos must be removed from `photos.json` and the repository separately.
 
 iPhone HEIC/HEIF photos are converted to JPEG in the browser before upload, using the browser's own image decoder. The converted JPEG must be at most 10 MB and keeps the original file name as its caption. If the browser cannot decode a HEIC/HEIF photo, export it as JPG before selecting it. No conversion service receives the photo.
 

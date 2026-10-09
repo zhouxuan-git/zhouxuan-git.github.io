@@ -40,6 +40,8 @@
   const signInForm = $("signInForm");
   const uploadForm = $("uploadForm");
   const viewer = $("photoViewer");
+  const deletePhotoButton = $("deletePhotoButton");
+  const viewerMessage = $("viewerMessage");
 
   ownerToggle.textContent = onlineReady ? "Add Photos" : "Set Up Uploads";
   $("ownerHeading").textContent = ownerToggle.textContent;
@@ -52,9 +54,11 @@
   let refreshToken = "";
   let tokenExpiresAt = 0;
   let viewerOpener = null;
+  let deleteInProgress = false;
 
   function setStatus(message) { albumStatus.textContent = message; }
   function setOwnerMessage(message) { ownerMessage.textContent = message; }
+  function setViewerMessage(message) { viewerMessage.textContent = message; }
   function pageTotal() { return Math.max(1, Math.ceil(photos.length / PAGE_SIZE)); }
 
   function safePhotoUrl(value) {
@@ -132,7 +136,7 @@
         if (!/\.(jpe?g|png|webp|gif|avif)$/i.test(name)) continue;
         const path = entry.name.startsWith("photos/") ? entry.name : `photos/${entry.name}`;
         const caption = captionFromStoredName(name);
-        found.push({ src: publicStorageUrl(path), caption, alt: caption });
+        found.push({ src: publicStorageUrl(path), caption, alt: caption, storagePath: path });
       }
       if (entries.length < limit) break;
     }
@@ -145,7 +149,11 @@
     let onlineError = null;
     if (onlineReady) {
       try { onlinePhotos = await loadOnlinePhotos(); }
-      catch (error) { onlineError = error; console.warn("Could not load online photos:", error); }
+      catch (error) {
+        onlineError = error;
+        onlinePhotos = photos.filter((photo) => photo.storagePath);
+        console.warn("Could not load online photos:", error);
+      }
     }
     const seen = new Set();
     photos = [...onlinePhotos, ...staticPhotos].filter((photo) => {
@@ -155,7 +163,7 @@
     });
     page = Math.min(page, pageTotal() - 1);
     renderPage();
-    if (onlineError) setStatus(`Online photos are unavailable${staticPhotos.length ? "; showing local photos" : ""}. Please try again later.`);
+    if (onlineError) setStatus(`Online photos could not refresh${onlinePhotos.length ? "; showing the last loaded photos" : staticPhotos.length ? "; showing local photos" : ""}. Please try again later.`);
     else setStatus("");
     return !onlineError;
   }
@@ -231,6 +239,8 @@
     $("viewerCounter").textContent = `${viewerIndex + 1} / ${photos.length}`;
     $("previousPhoto").disabled = viewerIndex === 0;
     $("nextPhoto").disabled = viewerIndex === photos.length - 1;
+    deletePhotoButton.hidden = !onlineReady || !accessToken || !photo.storagePath || photo.storagePath.split("/").length !== 2;
+    deletePhotoButton.disabled = deleteInProgress;
     const viewerPage = Math.floor(viewerIndex / PAGE_SIZE);
     if (page !== viewerPage) { page = viewerPage; renderPage(); }
   }
@@ -239,16 +249,59 @@
     if (!photos[index]) return;
     viewerOpener = document.activeElement;
     viewerIndex = index;
+    setViewerMessage("");
     updateViewer();
     viewer.showModal();
     $("closeViewer").focus();
   }
 
   function changeViewer(delta) {
+    if (deleteInProgress) return;
     const next = viewerIndex + delta;
     if (next < 0 || next >= photos.length) return;
     viewerIndex = next;
+    setViewerMessage("");
     updateViewer();
+  }
+
+  async function deletePhoto() {
+    const photo = photos[viewerIndex];
+    if (deleteInProgress || !onlineReady || !accessToken || !photo?.storagePath || photo.storagePath.split("/").length !== 2) return;
+    const path = photo.storagePath;
+    const index = viewerIndex;
+    if (!window.confirm(`Delete "${photo.caption}" from the album? This cannot be undone.`)) return;
+
+    deleteInProgress = true;
+    deletePhotoButton.disabled = true;
+    $("previousPhoto").disabled = true;
+    $("nextPhoto").disabled = true;
+    setViewerMessage("Deleting photo…");
+    try {
+      await ensureSession();
+      const endpoint = `/storage/v1/object/${encodeURIComponent(bucket)}/${path.split("/").map(encodeURIComponent).join("/")}`;
+      const deleteOne = () => apiRequest(endpoint, { method: "DELETE", token: accessToken });
+      try { await deleteOne(); }
+      catch (error) {
+        if (error.status !== 401) throw error;
+        await refreshSession();
+        await deleteOne();
+      }
+
+      // Keep the other photos visible if the listing request fails after deletion.
+      photos = photos.filter((item) => item.storagePath !== path);
+      const refreshed = await refreshPhotos();
+      if (photos.length) {
+        viewerIndex = Math.min(index, photos.length - 1);
+        updateViewer();
+        setViewerMessage(refreshed ? "Photo deleted." : "Photo deleted, but the album list could not refresh. Try again later.");
+      } else if (viewer.open) viewer.close();
+      setStatus(refreshed ? "Photo deleted." : "Photo deleted, but the album list could not refresh. Try again later.");
+    } catch (error) {
+      setViewerMessage(`Could not delete photo: ${error.message}`);
+    } finally {
+      deleteInProgress = false;
+      if (photos[viewerIndex]) updateViewer();
+    }
   }
 
   function updateOwnerPanel() {
@@ -256,7 +309,7 @@
     uploadForm.hidden = !onlineReady || !accessToken;
     $("setupHelp").hidden = onlineReady;
     if (!onlineReady) setOwnerMessage("Uploads are not set up yet. The album owner must connect photo storage first.");
-    else if (accessToken) setOwnerMessage("Signed in. Select photos to upload.");
+    else if (accessToken) setOwnerMessage("Signed in. Select photos to upload, or open a photo to delete it.");
     else setOwnerMessage("Only the album owner can upload. Sign in to continue.");
   }
 
@@ -268,7 +321,7 @@
   }
 
   async function refreshSession() {
-    if (!refreshToken) throw new Error("Session expired. Sign in again to upload.");
+    if (!refreshToken) throw new Error("Session expired. Sign in again.");
     try {
       const response = await apiRequest("/auth/v1/token?grant_type=refresh_token", {
         method: "POST",
@@ -280,7 +333,7 @@
       refreshToken = "";
       tokenExpiresAt = 0;
       updateOwnerPanel();
-      throw new Error("Session expired. Sign in again to upload.");
+      throw new Error("Session expired. Sign in again.");
     }
   }
 
@@ -428,6 +481,7 @@
     refreshToken = "";
     tokenExpiresAt = 0;
     updateOwnerPanel();
+    if (photos[viewerIndex]) updateViewer();
     if (token) {
       try { await apiRequest("/auth/v1/logout", { method: "POST", token }); }
       catch (error) { console.warn("Remote sign-out failed; local session was cleared:", error); }
@@ -447,6 +501,7 @@
   $("closeViewer").addEventListener("click", () => viewer.close());
   $("previousPhoto").addEventListener("click", () => changeViewer(-1));
   $("nextPhoto").addEventListener("click", () => changeViewer(1));
+  deletePhotoButton.addEventListener("click", deletePhoto);
   viewer.addEventListener("click", (event) => { if (event.target === viewer) viewer.close(); });
   viewer.addEventListener("close", () => {
     if (viewerOpener?.isConnected) viewerOpener.focus();
