@@ -11,7 +11,7 @@ At this repository's default GitHub Pages address, the album is available at `ht
 3. Confirm the project URL and **publishable key** (or the legacy `anon` key) in [`config.js`](./config.js). These settings are public; the server-side policies protect uploads. **Never put a `service_role` or secret key in this file.**
 4. Push the changes to `main` and make sure GitHub Pages is enabled. Open the album, select **Add Photos**, sign in, and select one or more photos. New photos appear first. Sign in again after refreshing the page; the browser does not save the password.
 
-On iPhone Safari, finish the system photo picker with the large blue checkmark or **Done**, then tap **Upload** on the website. If the picker stays open, copy one photo in the iPhone Photos app, return to Safari, expand **Photos picker stuck?**, tap **Paste Copied Photo**, allow paste if prompted, and tap **Upload**. This uses the clipboard and does not open the system photo picker. Alternatively, save a photo to the iPhone's Files app and use **Choose from Files instead**; select **Browse** or **Files** when iPhone asks for a source. Try one photo first. The browser cannot start an upload until its system picker returns the selected file.
+Select multiple photos in the device picker, finish the selection, and tap **Upload** on the website. The selected photos upload in sequence. On iPhone Safari, the system picker must return to the website before uploading can begin.
 
 When changing `config.js` or `app.js`, change their `?v=` values in `index.html` so browsers fetch the new files instead of a cached copy.
 
