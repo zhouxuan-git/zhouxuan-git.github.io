@@ -437,6 +437,8 @@
 
   async function pastePhotoFromClipboard() {
     pastedPhoto = null;
+    photoFiles.value = "";
+    photoFromFiles.value = "";
     if (!navigator.clipboard?.read) {
       setOwnerMessage("Photo paste is unavailable in this browser. Try choosing from Files instead.");
       return;
@@ -453,8 +455,6 @@
         const extension = FILE_TYPES.get(type) || "heic";
         const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
         pastedPhoto = new File([blob], `Pasted photo ${timestamp}.${extension}`, { type, lastModified: Date.now() });
-        photoFiles.value = "";
-        photoFromFiles.value = "";
         setOwnerMessage("1 photo copied from Photos. Tap Upload below.");
         $("uploadButton").scrollIntoView({ behavior: "smooth", block: "nearest" });
         return;
