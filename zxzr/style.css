@@ -313,6 +313,7 @@ button:focus-visible, a:focus-visible, input:focus-visible {
 .picker-fallback summary { width: fit-content; cursor: pointer; color: #514739; font-weight: 600; }
 .picker-fallback label { display: block; margin: 11px 0 6px; }
 .picker-fallback .form-note { margin-top: 7px; }
+.picker-fallback .paste-photo-button { margin-top: 10px; }
 
 .photo-viewer {
   width: min(1080px, calc(100vw - 28px));

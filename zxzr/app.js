@@ -41,6 +41,7 @@
   const uploadForm = $("uploadForm");
   const photoFiles = $("photoFiles");
   const photoFromFiles = $("photoFromFiles");
+  const pastePhotoButton = $("pastePhotoButton");
   const viewer = $("photoViewer");
   const deletePhotoButton = $("deletePhotoButton");
   const viewerMessage = $("viewerMessage");
@@ -57,6 +58,7 @@
   let tokenExpiresAt = 0;
   let viewerOpener = null;
   let deleteInProgress = false;
+  let pastedPhoto = null;
 
   function setStatus(message) { albumStatus.textContent = message; }
   function setOwnerMessage(message) { ownerMessage.textContent = message; }
@@ -350,7 +352,7 @@
     if (value) {
       updateOwnerPanel();
       ownerPanel.scrollIntoView({ behavior: "smooth", block: "start" });
-      if (onlineReady) (accessToken ? $("photoFiles") : $("ownerEmail")).focus();
+      if (onlineReady && !accessToken) $("ownerEmail").focus();
     } else ownerToggle.focus();
   }
 
@@ -368,7 +370,6 @@
       storeSession(session);
       $("ownerPassword").value = "";
       updateOwnerPanel();
-      $("photoFiles").focus();
     } catch (error) {
       setOwnerMessage(`Sign-in failed: ${error.message}`);
     } finally { button.disabled = false; }
@@ -434,9 +435,43 @@
     }
   }
 
+  async function pastePhotoFromClipboard() {
+    pastedPhoto = null;
+    if (!navigator.clipboard?.read) {
+      setOwnerMessage("Photo paste is unavailable in this browser. Try choosing from Files instead.");
+      return;
+    }
+    pastePhotoButton.disabled = true;
+    setOwnerMessage("Reading photo from clipboard…");
+    try {
+      const items = await navigator.clipboard.read();
+      for (const item of items) {
+        const type = item.types.find((value) => FILE_TYPES.has(value) || HEIC_TYPES.has(value));
+        if (!type) continue;
+        const blob = await item.getType(type);
+        if (!blob.size) continue;
+        const extension = FILE_TYPES.get(type) || "heic";
+        const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+        pastedPhoto = new File([blob], `Pasted photo ${timestamp}.${extension}`, { type, lastModified: Date.now() });
+        photoFiles.value = "";
+        photoFromFiles.value = "";
+        setOwnerMessage("1 photo copied from Photos. Tap Upload below.");
+        $("uploadButton").scrollIntoView({ behavior: "smooth", block: "nearest" });
+        return;
+      }
+      setOwnerMessage("No supported photo is on the clipboard. Copy one photo in Photos and try again.");
+    } catch (error) {
+      setOwnerMessage(error?.name === "NotAllowedError"
+        ? "Safari could not paste the photo. Allow paste access and try again."
+        : "Could not read a photo from the clipboard. Copy one photo in Photos and try again.");
+    } finally {
+      pastePhotoButton.disabled = false;
+    }
+  }
+
   async function uploadPhotos(event) {
     event.preventDefault();
-    const files = [...Array.from(photoFiles.files || []), ...Array.from(photoFromFiles.files || [])];
+    const files = pastedPhoto ? [pastedPhoto] : [...Array.from(photoFiles.files || []), ...Array.from(photoFromFiles.files || [])];
     if (!files.length) {
       setOwnerMessage("Choose at least one photo before uploading.");
       return;
@@ -472,11 +507,13 @@
       }
       photoFiles.value = "";
       photoFromFiles.value = "";
+      pastedPhoto = null;
       page = 0;
       const refreshed = await refreshPhotos();
-      setOwnerMessage(refreshed ? `Uploaded ${uploaded} photos. Album updated.` : `Uploaded ${uploaded} photos, but the list could not refresh. Please try again later.`);
+      const photoWord = uploaded === 1 ? "photo" : "photos";
+      setOwnerMessage(refreshed ? `Uploaded ${uploaded} ${photoWord}. Album updated.` : `Uploaded ${uploaded} ${photoWord}, but the list could not refresh. Please try again later.`);
     } catch (error) {
-      setOwnerMessage(`Uploaded ${uploaded} / ${files.length} photos. Upload stopped: ${error.message}`);
+      setOwnerMessage(`Uploaded ${uploaded} / ${files.length} ${files.length === 1 ? "photo" : "photos"}. Upload stopped: ${error.message}`);
       if (uploaded) await refreshPhotos();
     } finally { button.disabled = false; }
   }
@@ -503,10 +540,12 @@
   $("ownerClose").addEventListener("click", () => setPanelOpen(false));
   signInForm.addEventListener("submit", signIn);
   uploadForm.addEventListener("submit", uploadPhotos);
+  pastePhotoButton.addEventListener("click", pastePhotoFromClipboard);
   for (const input of [photoFiles, photoFromFiles]) {
     input.addEventListener("change", () => {
       const count = input.files?.length || 0;
       if (!count) return;
+      pastedPhoto = null;
       (input === photoFiles ? photoFromFiles : photoFiles).value = "";
       setOwnerMessage(`${count} photo${count === 1 ? "" : "s"} selected. Tap Upload below.`);
       $("uploadButton").scrollIntoView({ behavior: "smooth", block: "nearest" });

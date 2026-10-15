@@ -6,9 +6,9 @@
     <meta name="theme-color" content="#32251f">
     <meta name="description" content="Album">
     <title>Album</title>
-    <link rel="stylesheet" href="./style.css?v=20261015-picker">
+    <link rel="stylesheet" href="./style.css?v=20261015-paste">
     <script defer src="./config.js?v=20261006-uploads"></script>
-    <script defer src="./app.js?v=20261015-picker"></script>
+    <script defer src="./app.js?v=20261015-paste"></script>
   </head>
   <body>
     <main class="site-shell">
@@ -74,12 +74,14 @@
         <form id="uploadForm" class="owner-form" hidden>
           <label for="photoFiles">Choose photos</label>
           <input id="photoFiles" name="photos" type="file" accept="image/*" multiple>
-          <p class="form-note">On iPhone, tap Done in Photos, then tap Upload here. JPG, PNG, WebP, GIF, AVIF, HEIC, or HEIF; up to 10 MB per uploaded photo. HEIC/HEIF is converted to JPG on this device. File names become captions. Uploaded photos are public; remove private location metadata before uploading.</p>
+          <p class="form-note">On iPhone, tap the large blue checkmark or Done in Photos, then tap Upload here. JPG, PNG, WebP, GIF, AVIF, HEIC, or HEIF; up to 10 MB per uploaded photo. HEIC/HEIF is converted to JPG on this device. File names become captions. Uploaded photos are public; remove private location metadata before uploading.</p>
           <details class="picker-fallback">
             <summary>Photos picker stuck?</summary>
+            <p class="form-note">Copy one photo in the iPhone Photos app, return here, and tap the button below. Allow Safari to paste if asked.</p>
+            <button class="text-button paste-photo-button" id="pastePhotoButton" type="button">Paste Copied Photo</button>
             <label for="photoFromFiles">Choose from Files instead</label>
             <input id="photoFromFiles" name="photo_from_files" type="file">
-            <p class="form-note">Save the photo to Files on your iPhone, then choose it here and tap Upload.</p>
+            <p class="form-note">Save the photo to Files on your iPhone. When the iPhone asks where to choose from, tap Browse or Files, select the saved photo, then tap Upload here.</p>
           </details>
           <div class="owner-actions">
             <button class="primary-button" id="uploadButton" type="submit">Upload</button>

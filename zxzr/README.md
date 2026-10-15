@@ -11,13 +11,13 @@ At this repository's default GitHub Pages address, the album is available at `ht
 3. Confirm the project URL and **publishable key** (or the legacy `anon` key) in [`config.js`](./config.js). These settings are public; the server-side policies protect uploads. **Never put a `service_role` or secret key in this file.**
 4. Push the changes to `main` and make sure GitHub Pages is enabled. Open the album, select **Add Photos**, sign in, and select one or more photos. New photos appear first. Sign in again after refreshing the page; the browser does not save the password.
 
-On iPhone Safari, finish the system photo picker with **Done**, then tap **Upload** on the website. If the Photos picker stays open, save a photo to the iPhone's Files app, expand **Photos picker stuck?** in the upload panel, and choose the saved file there. Try one photo first. The browser cannot start an upload until its system picker returns the selected file.
+On iPhone Safari, finish the system photo picker with the large blue checkmark or **Done**, then tap **Upload** on the website. If the picker stays open, copy one photo in the iPhone Photos app, return to Safari, expand **Photos picker stuck?**, tap **Paste Copied Photo**, allow paste if prompted, and tap **Upload**. This uses the clipboard and does not open the system photo picker. Alternatively, save a photo to the iPhone's Files app and use **Choose from Files instead**; select **Browse** or **Files** when iPhone asks for a source. Try one photo first. The browser cannot start an upload until its system picker returns the selected file.
 
 When changing `config.js` or `app.js`, change their `?v=` values in `index.html` so browsers fetch the new files instead of a cached copy.
 
 **Where to find the owner UID:** In the Supabase project dashboard, open **Authentication → Users** and click the row for the email you will use to sign in to the album. Copy its **UID** (sometimes labeled **User ID** or **id**) from the user details. If there is no row, create an Auth user first; your Supabase dashboard account is not automatically an album user. You can also run `select id, email from auth.users;` in the SQL Editor; the `id` beside your album owner's email is the UID. Do not use the project ID.
 
-The project URL and publishable key are set in `config.js`. The website now shows **Add Photos**. Uploads require the Storage SQL below and a confirmed owner Auth account; live upload has not yet been verified.
+The project URL and publishable key are set in `config.js`. The website shows **Add Photos**. Uploads require the Storage SQL below and a confirmed owner Auth account.
 
 ```sql
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
