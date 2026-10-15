@@ -6,9 +6,9 @@
     <meta name="theme-color" content="#32251f">
     <meta name="description" content="Album">
     <title>Album</title>
-    <link rel="stylesheet" href="./style.css?v=20261009-delete">
+    <link rel="stylesheet" href="./style.css?v=20261015-picker">
     <script defer src="./config.js?v=20261006-uploads"></script>
-    <script defer src="./app.js?v=20261009-delete"></script>
+    <script defer src="./app.js?v=20261015-picker"></script>
   </head>
   <body>
     <main class="site-shell">
@@ -73,8 +73,14 @@
         </form>
         <form id="uploadForm" class="owner-form" hidden>
           <label for="photoFiles">Choose photos</label>
-          <input id="photoFiles" name="photos" type="file" accept="image/jpeg,image/png,image/webp,image/gif,image/avif,image/heic,image/heif,.heic,.heif" multiple required>
-          <p class="form-note">JPG, PNG, WebP, GIF, AVIF, HEIC, or HEIF. HEIC/HEIF photos are converted to JPG on this device. Up to 10 MB per uploaded photo. File names become captions. Uploaded photos are public; remove private location metadata before uploading.</p>
+          <input id="photoFiles" name="photos" type="file" accept="image/*" multiple>
+          <p class="form-note">On iPhone, tap Done in Photos, then tap Upload here. JPG, PNG, WebP, GIF, AVIF, HEIC, or HEIF; up to 10 MB per uploaded photo. HEIC/HEIF is converted to JPG on this device. File names become captions. Uploaded photos are public; remove private location metadata before uploading.</p>
+          <details class="picker-fallback">
+            <summary>Photos picker stuck?</summary>
+            <label for="photoFromFiles">Choose from Files instead</label>
+            <input id="photoFromFiles" name="photo_from_files" type="file">
+            <p class="form-note">Save the photo to Files on your iPhone, then choose it here and tap Upload.</p>
+          </details>
           <div class="owner-actions">
             <button class="primary-button" id="uploadButton" type="submit">Upload</button>
             <button class="text-button" id="signOutButton" type="button">Sign Out</button>

@@ -39,6 +39,8 @@
   const ownerMessage = $("ownerMessage");
   const signInForm = $("signInForm");
   const uploadForm = $("uploadForm");
+  const photoFiles = $("photoFiles");
+  const photoFromFiles = $("photoFromFiles");
   const viewer = $("photoViewer");
   const deletePhotoButton = $("deletePhotoButton");
   const viewerMessage = $("viewerMessage");
@@ -434,8 +436,11 @@
 
   async function uploadPhotos(event) {
     event.preventDefault();
-    const files = Array.from($("photoFiles").files || []);
-    if (!files.length) return;
+    const files = [...Array.from(photoFiles.files || []), ...Array.from(photoFromFiles.files || [])];
+    if (!files.length) {
+      setOwnerMessage("Choose at least one photo before uploading.");
+      return;
+    }
     const invalid = files.find((file) => (!FILE_TYPES.has(file.type) && !isHeic(file)) || (!isHeic(file) && file.size > MAX_FILE_BYTES) || file.size === 0);
     if (invalid) {
       setOwnerMessage(`"${invalid.name}" is unsupported, empty, or over 10 MB. Choose another file.`);
@@ -465,7 +470,8 @@
         }
         uploaded += 1;
       }
-      $("photoFiles").value = "";
+      photoFiles.value = "";
+      photoFromFiles.value = "";
       page = 0;
       const refreshed = await refreshPhotos();
       setOwnerMessage(refreshed ? `Uploaded ${uploaded} photos. Album updated.` : `Uploaded ${uploaded} photos, but the list could not refresh. Please try again later.`);
@@ -497,6 +503,15 @@
   $("ownerClose").addEventListener("click", () => setPanelOpen(false));
   signInForm.addEventListener("submit", signIn);
   uploadForm.addEventListener("submit", uploadPhotos);
+  for (const input of [photoFiles, photoFromFiles]) {
+    input.addEventListener("change", () => {
+      const count = input.files?.length || 0;
+      if (!count) return;
+      (input === photoFiles ? photoFromFiles : photoFiles).value = "";
+      setOwnerMessage(`${count} photo${count === 1 ? "" : "s"} selected. Tap Upload below.`);
+      $("uploadButton").scrollIntoView({ behavior: "smooth", block: "nearest" });
+    });
+  }
   $("signOutButton").addEventListener("click", signOut);
   $("closeViewer").addEventListener("click", () => viewer.close());
   $("previousPhoto").addEventListener("click", () => changeViewer(-1));

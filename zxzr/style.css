@@ -309,6 +309,10 @@ button:focus-visible, a:focus-visible, input:focus-visible {
 .owner-form > .primary-button { justify-self: start; margin-top: 8px; }
 .owner-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 10px; }
 .form-note { margin: 0; color: #8b7868; font-size: 12px; }
+.picker-fallback { margin-top: 4px; padding-top: 10px; border-top: 1px solid rgba(153, 116, 82, .25); }
+.picker-fallback summary { width: fit-content; cursor: pointer; color: #514739; font-weight: 600; }
+.picker-fallback label { display: block; margin: 11px 0 6px; }
+.picker-fallback .form-note { margin-top: 7px; }
 
 .photo-viewer {
   width: min(1080px, calc(100vw - 28px));
