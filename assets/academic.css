@@ -27,14 +27,10 @@ body {
 
 .profile {
   display: grid;
-  grid-template-columns: minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr) clamp(10rem, 26vw, 13.5rem);
   align-items: center;
   gap: clamp(1.5rem, 5vw, 3.75rem);
   padding-block-end: 2.5rem;
-}
-
-.profile:has(.portrait) {
-  grid-template-columns: minmax(0, 1fr) clamp(10rem, 26vw, 13.5rem);
 }
 
 h1, h2 {
@@ -128,7 +124,7 @@ a:focus-visible {
     width: calc(100% - 2.5rem);
   }
 
-  .profile:has(.portrait) {
+  .profile {
     grid-template-columns: minmax(0, 1fr);
   }
 
